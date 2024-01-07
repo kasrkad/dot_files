@@ -16,7 +16,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
-
+export FZF_BASE="/usr/bin/fzf"
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -77,7 +77,12 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git
+	docker
+	docker-compose
+	kubectl
+	minikube
+	fzf)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,27 +111,21 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-create_venv(){
-	python -m venv ~/venv/$1
+alias k="kubectl"
+alias ans="source ~/venv/ansible2.9/bin/activate"
+alias simi2="cd /home/kasrkad/git/simi2 && git pull && nvim ."
+alias mon="cd /home/kasrkad/git/monitoring && git pull && nvim ."
+alias n="nvim"
+alias gp="git pull"
+function decrypt(){
+	python ~/git/ansible_decryptor/decrypt.py "$1" | ansible-vault decrypt --vault-password-file=~/.vlt | rev | cut -c1- | rev
 }
-activate_venv(){
-	source ~/venv/$1/bin/activate
+function encrypt(){
+	ansible-vault encrypt_string --vault-password-file=~/.vlt "$1"
 }
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/kasrkad/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/kasrkad/micromamba/etc/profile.d/conda.sh" ]; then
-        . "/home/kasrkad/micromamba/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/kasrkad/micromamba/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
+# if [[ $(ps --no-header -p $PPID -o comm) =~ '^alacritty$' ]]; then
+#         for wid in $(xdotool search --pid $PPID); do
+#             xprop -f _KDE_NET_WM_BLUR_BEHIND_REGION 32c -set _KDE_NET_WM_BLUR_BEHIND_REGION 0 -id $wid; done
+# fi
